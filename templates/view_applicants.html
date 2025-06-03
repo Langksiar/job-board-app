@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Applicants - Job Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2>All Applicants</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <table class="application-table">
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Date Applied</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td>{{ app.title }}</td>
+                    <td>{{ app.student_name }}</td>
+                    <td>{{ app.student_email }}</td>
+                    <td>{{ app.message }}</td>
+                    <td>{{ app.status }}</td>
+                    <td>{{ app.date_applied }}</td>
+                    <td>
+                        <a href="{{ url_for('update_application_status', app_id=app.id, status='approved') }}">Approve</a> |
+                        <a href="{{ url_for('update_application_status', app_id=app.id, status='rejected') }}">Reject</a> |
+                        <a href="{{ url_for('update_application_status', app_id=app.id, status='pending') }}">Pending</a>
+                    </td>
+                </tr>
+                {% if not applications %}
+                <tr>
+                    <td colspan="7" style="text-align:center;">No applicants yet.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        <a href="{{ url_for('employer_dashboard') }}">Back to Dashboard</a>
+    </div>
+</body>
+</html>

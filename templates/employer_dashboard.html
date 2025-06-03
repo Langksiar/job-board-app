@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Employer Dashboard - Job Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Display flash messages if any -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="header">
+            <h1>Employer Dashboard</h1>
+            <div class="user-info">
+                <span>Welcome, {{ session.get('name', 'Employer') }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="post-job-form">
+                <h2>Post a New Job</h2>
+                <form method="POST" action="{{ url_for('post_job') }}">
+                    <div class="form-group">
+                        <label for="title">Job Title</label>
+                        <input type="text" id="title" name="title" placeholder="Enter job title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Job Location</label>
+                        <input type="text" id="location" name="location" placeholder="On-campus or Off-campus" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Job Description</label>
+                        <textarea id="description" name="description" placeholder="Provide details about the job" rows="4" required></textarea>
+                    </div>
+                    <button type="submit">Post Job</button>
+                </form>
+            </div>
+
+            <div class="job-listing">
+                <h2>Your Job Postings</h2>
+                {% if jobs %}
+                    {% for job in jobs %}
+                        <div class="job-card">
+                            <h3>{{ job[1] }}</h3>
+                            <div class="job-meta">
+                                <span>Location: {{ job[2] }}</span>
+                                <span>Applications: {{ job[4] }}</span>
+                            </div>
+                            <p>{{ job[3] }}</p>
+                            <div class="job-actions">
+                                <a href="{{ url_for('view_applications', job_id=job[0]) }}" class="view-btn">
+                                    View Applications
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>You haven't posted any jobs yet. Create your first job posting above!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Job Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <div class="already-account">New here? <a href="{{ url_for('register') }}">Create an account</a></div>
+            
+            <!-- Display flash messages if any -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <h2>Welcome back</h2>
+            <form method="POST" action="{{ url_for('login') }}" class="signup-form">
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" placeholder="example.email@gmail.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                
+                <input type="submit" value="Log in" class="login-btn">
+            </form>
+            
+            <p style="text-align:center;">Or login with</p>
+            <div class="social-icons">
+                <button class="social google">G</button>
+                <button class="social facebook">f</button>
+                <button class="social apple"></button>
+            </div>
+        </div>
+        <div class="image-section">
+            <img src="{{ url_for('static', filename='illustration.png') }}" alt="Illustration" />
+            <h3>Find the right job for you</h3>
+            <p>Part-time jobs on and off campus</p>
+        </div>
+    </div>
+</body>
+</html>

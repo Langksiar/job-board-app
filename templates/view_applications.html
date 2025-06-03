@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Applications - Job Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="header">
+            <h1>Job Applications</h1>
+            <div class="user-info">
+                <span>Welcome, {{ session.get('name', 'Employer') }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        <div class="job-detail">
+            <h2>{{ job[1] }}</h2>
+            <div class="job-meta">
+                <span>Location: {{ job[2] }}</span>
+            </div>
+            <p>{{ job[3] }}</p>
+        </div>
+
+        <div class="job-listing">
+            <h2>Received Applications</h2>
+            {% if applications %}
+                <table class="applications-table">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email</th>
+                            <th>Message</th>
+                            <th>CV</th>
+                            <th>Status</th>
+                            <th>Date Applied</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                            <tr>
+                                <td>{{ app[1] }}</td>
+                                <td>{{ app[2] }}</td>
+                                <td>
+                                    <div class="message-preview">
+                                        {{ app[3]|truncate(50, True, '...') }}
+                                        {% if app[3]|length > 50 %}
+                                            <a href="#" class="view-message" onclick="showMessage('{{ app[3]|e }}')">View Full</a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if app[6] %}
+                                        <a href="{{ url_for('download_cv', app_id=app[0]) }}" class="view-cv">View CV</a>
+                                    {% else %}
+                                        No CV
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ app[4].lower() }}">
+                                        {{ app[4] }}
+                                    </span>
+                                </td>
+                                <td>{{ app[5] }}</td>
+                                <td>
+                                    <div class="status-actions">
+                                        <a href="{{ url_for('update_application_status', app_id=app[0], status='approved') }}" class="status-btn approve-btn">Approve</a>
+                                        <a href="{{ url_for('update_application_status', app_id=app[0], status='rejected') }}" class="status-btn reject-btn">Reject</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No applications received for this job yet.</p>
+            {% endif %}
+            
+            <div class="job-actions">
+                <a href="{{ url_for('employer_dashboard') }}" class="secondary-btn">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for full message -->
+    <div id="messageModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeMessage()">×</span>
+            <h3>Application Message</h3>
+            <p id="fullMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        function showMessage(message) {
+            document.getElementById('fullMessage').textContent = message;
+            document.getElementById('messageModal').style.display = 'block';
+        }
+
+        function closeMessage() {
+            document.getElementById('messageModal').style.display = 'none';
+        }
+    </script>
+
+    <style>
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            max-width: 500px;
+            width: 100%;
+        }
+        .close-modal {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .view-message, .view-cv {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .view-message:hover, .view-cv:hover {
+            text-decoration: underline;
+        }
+        .message-preview {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+</body>
+</html>

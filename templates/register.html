@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - Job Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        function selectRole(role) {
+            document.getElementById('studentRole').classList.remove('selected');
+            document.getElementById('employerRole').classList.remove('selected');
+            document.getElementById(role + 'Role').classList.add('selected');
+            document.getElementById('roleInput').value = role;
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="form-section">
+            <div class="already-account">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></div>
+            
+            <!-- Display flash messages if any -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <h2>Create an account</h2>
+            
+            <form method="POST" action="{{ url_for('register') }}" class="signup-form">
+                <div class="form-group">
+                    <label for="name">Full name</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <input type="email" id="email" name="email" placeholder="example.email@gmail.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter at least 8+ characters" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>I am a:</label>
+                    <div class="role-selector">
+                        <div id="studentRole" class="role-option selected" onclick="selectRole('student')">
+                            <h3>Student</h3>
+                            <p>Browse and apply for jobs</p>
+                        </div>
+                        <div id="employerRole" class="role-option" onclick="selectRole('employer')">
+                            <h3>Employer</h3>
+                            <p>Post jobs and find talent</p>
+                        </div>
+                    </div>
+                    <input type="hidden" id="roleInput" name="role" value="student">
+                </div>
+                
+                <input type="submit" value="Create Account" class="signup-btn">
+            </form>
+            
+            <p style="text-align:center;">Or sign up with</p>
+            <div class="social-icons">
+                <button class="social google">G</button>
+                <button class="social facebook">f</button>
+                <button class="social apple"></button>
+            </div>
+        </div>
+        <div class="image-section">
+            <img src="{{ url_for('static', filename='illustration.png') }}" alt="Illustration" />
+            <h3>Find the right job for you</h3>
+            <p>Part-time jobs on and off campus</p>
+        </div>
+    </div>
+</body>
+</html>

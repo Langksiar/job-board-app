@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard - Job Board</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.getElementById('jobListings').classList.remove('active');
+            document.getElementById('myApplications').classList.remove('active');
+            
+            // Remove active class from tabs
+            document.getElementById('jobListingsTab').classList.remove('active');
+            document.getElementById('myApplicationsTab').classList.remove('active');
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+    </script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Display flash messages if any -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="header">
+            <h1>Student Dashboard</h1>
+            <div class="user-info">
+                <span>Welcome, {{ session.get('name', 'Student') }}</span>
+                <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <div class="tabs">
+                <div id="jobListingsTab" class="tab active" onclick="showTab('jobListings')">
+                    Job Listings
+                </div>
+                <div id="myApplicationsTab" class="tab" onclick="showTab('myApplications')">
+                    My Applications
+                </div>
+            </div>
+
+            <div id="jobListings" class="tab-content active">
+                <h2>Available Jobs</h2>
+                {% if jobs %}
+                    {% for job in jobs %}
+                        <div class="job-card">
+                            <h3>{{ job[1] }}</h3>
+                            <div class="job-meta">
+                                <span>Company: {{ job[4] }}</span>
+                                <span>Location: {{ job[2] }}</span>
+                            </div>
+                            <p>{{ job[3] }}</p>
+                            <div class="job-actions">
+                                {% if job[5] > 0 %}
+                                    <span class="applied-badge">Applied</span>
+                                {% else %}
+                                    <a href="{{ url_for('apply_job', job_id=job[0]) }}" class="apply-btn">
+                                        Apply Now
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>No job listings available at the moment.</p>
+                {% endif %}
+            </div>
+
+            <div id="myApplications" class="tab-content">
+                <h2>My Applications</h2>
+                {% if applications %}
+                    <table class="applications-table">
+                        <thead>
+                            <tr>
+                                <th>Job Title</th>
+                                <th>Company</th>
+                                <th>Status</th>
+                                <th>Date Applied</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for app in applications %}
+                                <tr>
+                                    <td>{{ app[1] }}</td>
+                                    <td>{{ app[2] }}</td>
+                                    <td>
+                                        <span class="status-badge status-{{ app[3].lower() }}">
+                                            {{ app[3] }}
+                                        </span>
+                                    </td>
+                                    <td>{{ app[4] }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>You haven't applied to any jobs yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
